@@ -12,6 +12,11 @@ source venv/bin/activate
 
 # Install requirements.
 python -m pip install -r requirements.txt
+if ! [[ -d "./browsermob-proxy-2.1.4" ]]; then
+  wget https://github.com/lightbody/browsermob-proxy/releases/download/browsermob-proxy-2.1.4/browsermob-proxy-2.1.4-bin.zip -O browsermob-proxy.zip 
+  unzip browsermob-proxy.zip 
+  rm browsermob-proxy.zip 
+fi
 
 # Run test.
 python benchmark.py

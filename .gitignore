@@ -4,9 +4,17 @@
 # dependencies
 /js/node_modules
 /python/venv
+/python/browsermob-proxy*
 
 # cache
 python/__pycache__
+
+# browsermob-proxy stuff
+python/server.log
+python/bmp.log
+
+# Test results
+python/results
 
 # Build
 /js/dist
