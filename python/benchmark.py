@@ -25,15 +25,25 @@ TEST_IMAGES = [TEST_IMAGE_GCS, TEST_IMAGE_S3]
 
 def run_benchmark():
 
+    # Check whether there are browsermob processes and end them.
     for proc in psutil.process_iter():
-        # Check whether there are browsermob processes and end them.
-        if proc.name() == "browsermob-proxy":
+        cmd = []
+        try:
+            cmd = proc.cmdline()
+        except:
+            continue
+        if any(["browsermob-proxy" in arg for arg in cmd]):
             proc.kill()
 
+    # There seems to be an issue where starting up the server immediately after ending the old processes is problematic.
+    time.sleep(1)
+
+    # Start up the proxy server to record the traffic.
     server = Server("./browsermob-proxy-2.1.4/bin/browsermob-proxy")
     server.start()
     proxy = server.create_proxy()
 
+    # Set up browser to launch.
     options = webdriver.ChromeOptions()
     options.add_argument(
         "--disable-infobars --disable-extensions --window-size=1366,768"
@@ -44,18 +54,25 @@ def run_benchmark():
     options.add_argument("--proxy-server={0}".format(proxy_url))
     driver = webdriver.Chrome(chrome_options=options)
 
+    # Run tests.
     for image in TEST_IMAGES:
         url = image["url"]
         name = image["name"]
+        # Set up har download (i.e the log of traffic) and launch webpage for testing the current image.
         proxy.new_har(
             f"localhost:9000/?image_url={url}",
             options={"captureHeaders": True, "captureContent": True},
         )
         driver.get(f"localhost:9000/?image_url={url}")
-        time.sleep(40)  # This should be more than enough
+        # This should be more than enough for the test to complete.
+        time.sleep(40)
+
+        # Dump the results of the test.
         os.makedirs("results", exist_ok=True)
         with open(f"results/{name}.json", "w+") as f:
             f.write(json.dumps(proxy.har, ensure_ascii=False))
+
+    # Clean up.
     server.stop()
     driver.quit()
 
