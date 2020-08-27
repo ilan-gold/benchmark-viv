@@ -23,9 +23,7 @@ TEST_IMAGE_S3 = {
 TEST_IMAGES = [TEST_IMAGE_GCS, TEST_IMAGE_S3]
 
 
-def run_benchmark():
-
-    # Check whether there are browsermob processes and end them.
+def end_daemon_browsermob_processes():
     for proc in psutil.process_iter():
         cmd = []
         try:
@@ -35,14 +33,15 @@ def run_benchmark():
         if any(["browsermob-proxy" in arg for arg in cmd]):
             proc.kill()
 
-    # There seems to be an issue where starting up the server immediately after ending the old processes is problematic.
-    time.sleep(1)
 
-    # Start up the proxy server to record the traffic.
+def start_proxy_server():
     server = Server("./browsermob-proxy-2.1.4/bin/browsermob-proxy")
     server.start()
     proxy = server.create_proxy()
+    return (server, proxy)
 
+
+def start_chrome(proxy_url):
     # Set up browser to launch.
     options = webdriver.ChromeOptions()
     options.add_argument(
@@ -50,11 +49,12 @@ def run_benchmark():
     )
     # The proxy doesn't work with ssl/https.
     options.add_argument("--ignore-certificate-errors")
-    proxy_url = urlparse(proxy.proxy).path
     options.add_argument("--proxy-server={0}".format(proxy_url))
     driver = webdriver.Chrome(chrome_options=options)
+    return driver
 
-    # Run tests.
+
+def run_tests(proxy, driver):
     for image in TEST_IMAGES:
         url = image["url"]
         name = image["name"]
@@ -71,6 +71,24 @@ def run_benchmark():
         os.makedirs("results", exist_ok=True)
         with open(f"results/{name}.json", "w+") as f:
             f.write(json.dumps(proxy.har, ensure_ascii=False))
+
+
+def run_benchmark():
+    # Check whether there are browsermob processes and end them.
+    end_daemon_browsermob_processes()
+
+    # There seems to be an issue where starting up the server immediately after ending the old processes is problematic.
+    time.sleep(1)
+
+    # Start up the proxy server to record the traffic.
+    (server, proxy) = start_proxy_server()
+
+    # Set up chrome browser.
+    proxy_url = urlparse(proxy.proxy).path
+    driver = start_chrome(proxy_url)
+
+    # Run tests.
+    run_tests(proxy, driver)
 
     # Clean up.
     server.stop()
