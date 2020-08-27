@@ -78,11 +78,6 @@ def run_tests(proxy, driver):
 
 
 def run_benchmark():
-    # Check whether there are browsermob processes and end them.
-    end_daemon_browsermob_processes()
-
-    # There seems to be an issue where starting up the server immediately after ending the old processes is problematic.
-    time.sleep(1)
 
     # Start up the proxy server to record the traffic.
     (server, proxy) = start_proxy_server()
@@ -97,6 +92,9 @@ def run_benchmark():
     # Clean up.
     server.stop()
     driver.quit()
+
+    # Check whether there are browsermob processes and end them (there should be one, at least).
+    end_daemon_browsermob_processes()
 
 
 if __name__ == "__main__":
