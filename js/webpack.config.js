@@ -27,6 +27,10 @@ const CONFIG = {
       },
     ],
   },
+  devServer: {
+    port: 9000,
+    open: false,
+  },
   plugins: [
     new HtmlWebPackPlugin({
       hash: true,

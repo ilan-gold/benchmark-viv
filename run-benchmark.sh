@@ -1,6 +1,9 @@
+# End background `npm start` call.
+trap 'jobs -p | xargs kill' EXIT
+
 # Build the site out of the javascript directory.
 cd js
-npm run-script build
+npm start &
 
 # Activate/create python environment.
 cd ../python

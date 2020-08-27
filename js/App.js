@@ -4,14 +4,6 @@ import ReactDOM from "react-dom";
 import DeckGL, { OrthographicView, LinearInterpolator } from "deck.gl";
 import { MultiscaleImageLayer, createOMETiffLoader } from "@hms-dbmi/viv";
 
-// Image sources.
-
-const TEST_IMAGE_GCS =
-  "https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif";
-
-const TEST_IMAGE_S3 =
-  "https://s3.amazonaws.com/vitessce-data/test-data/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif";
-
 // Interpolator.  We can turn off and on what gets interpolated.
 const transitionInterpolator = new LinearInterpolator(["target", "zoom"]);
 
@@ -33,6 +25,8 @@ const transitionViewStates = [
     transitionDuration: 6000,
   },
 ];
+
+const url = new URL(document.location);
 
 export default function App() {
   const [loader, setLoader] = useState(null);
@@ -59,7 +53,7 @@ export default function App() {
     const getLoader = async () => {
       const newLoader = await createOMETiffLoader({
         // Swap out the URL to test a different storage provider (and protocol).
-        url: TEST_IMAGE_GCS,
+        url: url.searchParams.get("image_url"),
         offsets: [],
       });
       setLoader(newLoader);

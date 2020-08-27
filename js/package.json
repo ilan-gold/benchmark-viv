@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "mkdir dist || rm -r dist && node_modules/.bin/webpack --config webpack.config.js --mode production"
+    "start": "node_modules/.bin/webpack-dev-server --config webpack.config.js --mode development --hot"
   },
   "dependencies": {
     "@hms-dbmi/viv": "0.4.2",
