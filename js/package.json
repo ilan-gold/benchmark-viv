@@ -1,0 +1,23 @@
+{
+  "name": "benchmark-viv",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "mkdir dist || rm -r dist && node_modules/.bin/webpack --config webpack.config.js --mode production"
+  },
+  "dependencies": {
+    "@hms-dbmi/viv": "0.4.2",
+    "deck.gl": "^8.2.0",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "html-webpack-plugin": "^4.3.0",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.1"
+  }
+}
