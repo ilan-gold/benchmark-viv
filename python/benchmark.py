@@ -22,6 +22,8 @@ TEST_IMAGE_S3 = {
 }
 TEST_IMAGES = [TEST_IMAGE_GCS, TEST_IMAGE_S3]
 
+RESULTS_DIR = "../results"
+
 
 def end_daemon_browsermob_processes():
     for proc in psutil.process_iter():
@@ -68,8 +70,8 @@ def run_tests(proxy, driver):
         time.sleep(40)
 
         # Dump the results of the test.
-        os.makedirs("results", exist_ok=True)
-        with open(f"results/{name}.json", "w+") as f:
+        os.makedirs(RESULTS_DIR, exist_ok=True)
+        with open(f"{RESULTS_DIR}/{name}.json", "w+") as f:
             f.write(json.dumps(proxy.har, ensure_ascii=False))
 
 

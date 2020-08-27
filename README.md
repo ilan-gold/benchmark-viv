@@ -1,9 +1,14 @@
 # Benchmarking Viv
 
-This is a piece of software for automatically benchmarking Viv. It uses `python` and `selenium` to run tests and a minimal setup of `viv` layers + loaders to do the client-side testing. You may need to update Chrome for this to work - open Chrome
-and navigate to "About Google Chrome."
+This is a piece of software for automatically benchmarking Viv. It uses [Selenium](https://selenium-python.readthedocs.io/) to run tests and a minimal setup of [Viv](http://viv.gehlenborglab.org/) `layers` + `loaders` to do the client-side testing. You may need to update Chrome for this to work - open Chrome and navigate to "About Google Chrome" where you should see an option to automatically update. This is due to the [`chromedriver-binary`](https://pypi.org/project/chromedriver-binary/) version needing to match your browser version, so this could be a pain-point going forward.
+
+The results of this test are captured using the proxy utility [BrowserMob Proxy](https://bmp.lightbody.net/) - the [HAR file](https://toolbox.googleapps.com/apps/har_analyzer/) is dumped as `JSON` into the `results` folder (and will need to be parsed).
 
 ### Usage
+
+You need `python3` installed in your path as well as `npm`/`node`.
+
+To run:
 
 ```bash
 ./run-benchmark.sh
@@ -11,6 +16,8 @@ and navigate to "About Google Chrome."
 
 ### Benchmarking
 
-So far, we have a list at the top of `js/App.js` called `transitionViewStates` that contains a list of objects like `{ target, zoom, transitionDuration }` specifiying where to transition to and how quickly. For now both `zoom` and `target` are interpolated but that can change.
+So far, we have a list at the top of `js/App.js` called `transitionViewStates` that contains a list of objects like `{ target, zoom, transitionDuration }` specifiying where to transition to and how quickly. For now both `zoom` and `target` are interpolated but that can change so that only one is interpolated at a time.
 
-We can check how long it takes all tiles to load by looking at our network tab on our browser. So, far GCS and S3 (the two image sources) are comparable, but to do this benchmarking properly regarding HTTP vs HTTP2, we need to spin up our servers.
+### Data
+
+Right now only the standard Vanderbilt MxIF Kidney OME-ITFF images are used (tile size 512), with one copy on s3 and GCS. Eventually, we will want to test different tile sizes, file formats (i.e Zarr), local and remote files, and all the combinations (on both HTTP and HTTP2).
