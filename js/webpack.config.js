@@ -16,8 +16,6 @@ const CONFIG = {
   module: {
     rules: [
       {
-        // Transpile ES6 to ES5 with babel
-        // Remove if your app does not use JSX or you don't need to support old browsers
         test: /\.js$/,
         loader: "babel-loader",
         exclude: [/node_modules/],
@@ -34,11 +32,9 @@ const CONFIG = {
   plugins: [
     new HtmlWebPackPlugin({
       hash: true,
-      filename: "index.html", // target html
-      template: "./index.html", // source html
+      filename: "index.html",
+      template: "./index.html",
     }),
   ],
 };
-
-// This line enables bundling against src in this repo rather than installed module
 module.exports = CONFIG;

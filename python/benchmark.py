@@ -10,7 +10,6 @@ import json
 import psutil
 
 # Image sources.
-
 TEST_IMAGE_GCS = {
     "name": "gcs_http2_vanderbilt",
     "url": "https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif",
@@ -22,6 +21,7 @@ TEST_IMAGE_S3 = {
 }
 TEST_IMAGES = [TEST_IMAGE_GCS, TEST_IMAGE_S3]
 
+# Top level directory for results.
 RESULTS_DIR = "../results"
 
 
@@ -29,6 +29,7 @@ def end_daemon_browsermob_processes():
     for proc in psutil.process_iter():
         cmd = []
         try:
+            # The name of the proc is just "java" or something so this is more robust.
             cmd = proc.cmdline()
         except:
             continue
@@ -37,6 +38,7 @@ def end_daemon_browsermob_processes():
 
 
 def start_proxy_server():
+    # Unzipped library from `run-benchmark.sh`.
     server = Server("./browsermob-proxy-2.1.4/bin/browsermob-proxy")
     server.start()
     proxy = server.create_proxy()
@@ -51,7 +53,7 @@ def start_chrome(proxy_url):
     )
     # The proxy doesn't work with ssl/https.
     options.add_argument("--ignore-certificate-errors")
-    options.add_argument("--proxy-server={0}".format(proxy_url))
+    options.add_argument(f"--proxy-server={proxy_url}")
     driver = webdriver.Chrome(chrome_options=options)
     return driver
 

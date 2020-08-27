@@ -52,7 +52,6 @@ export default function App() {
   useEffect(() => {
     const getLoader = async () => {
       const newLoader = await createOMETiffLoader({
-        // Swap out the URL to test a different storage provider (and protocol).
         url: url.searchParams.get("image_url"),
         offsets: [],
       });
@@ -67,6 +66,7 @@ export default function App() {
       loader,
       id: "image-layer",
       // These are pretty arbitrary - four channels is standard though.
+      // We may want to make the number of channels a URL parameter as well.
       loaderSelection: [
         { channel: 0 },
         { channel: 1 },
