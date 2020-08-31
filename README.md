@@ -8,7 +8,7 @@ The results of this test are captured using the proxy utility [BrowserMob Proxy]
 
 You need `python3` installed in your path as well as `npm`/`node`.
 
-To run:
+To run the benchmarking and install any dependencies you may need (beyond the above two):
 
 ```bash
 ./run-benchmark.sh
