@@ -21,3 +21,20 @@ So far, we have a list at the top of `js/App.js` called `transitionViewStates` t
 ### Data
 
 Right now only the standard Vanderbilt MxIF Kidney OME-ITFF images are used (tile size 512), with one copy on s3 and GCS. Eventually, we will want to test different tile sizes, file formats (i.e Zarr), local and remote files, number of channels, screen size (mobile vs browser), and all the combinations (on both HTTP and HTTP2).
+
+
+#### Tasks
+- tilesize vs. viewport size:
+  - `tilesizes`: 256x256, 512x512, 1024x1024 
+  - `viewport sizes`: Mobile, Tablet, Desktop, Widescreen?
+  - Expected results: larger tiles for bigger displays will generally be better; smaller tiles faster to load.
+- number of channels (1-6):
+  - Expected results: fewer channels, faster loading.
+- HTTP1 vs HTTP2.
+  - Toggle on and off HTTP1/2 clientside for 1.) GCS bucket, 2.) Custom server supporting HTTP/2.
+  - Expected results: likely doesn't matter for commercial storage; substantially better for in house server.
+- Local vs Remote:
+  - Probably just for TIFF. 
+  - Expected results: local is much faster (I'm not sure we need to show this).
+  
+ 
