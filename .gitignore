@@ -5,6 +5,8 @@
 /js/node_modules
 /python/venv
 /python/browsermob-proxy*
+/python/server.log
+/python/bmp.log
 
 # cache
 python/__pycache__

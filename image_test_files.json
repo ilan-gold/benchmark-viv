@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif",
+    "is_http2": false,
+    "use_bmp_http1": true,
+    "capture_har_with_bmp": true
+  },
+  {
+    "url": "https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif",
+    "is_http2": true,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  }
+]
