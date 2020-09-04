@@ -2,7 +2,8 @@
 
 This is a piece of software for automatically benchmarking Viv. It uses [Selenium](https://selenium-python.readthedocs.io/) to run tests and a minimal setup of [Viv](http://viv.gehlenborglab.org/) `layers` + `loaders` to do the client-side testing. You may need to update Chrome for this to work - open Chrome and navigate to "About Google Chrome" where you should see an option to automatically update. This is due to the [`chromedriver-binary`](https://pypi.org/project/chromedriver-binary/) version needing to match your browser version, so this could be a pain-point going forward.
 
-The results of this test are captured using the proxy utility [BrowserMob Proxy](https://bmp.lightbody.net/) - the [HAR file](https://toolbox.googleapps.com/apps/har_analyzer/) is dumped as `JSON` into the `results` folder (and will need to be parsed).
+The results of this test are captured using a browser extension built out of `js/har_extension` that downloads a har file parsed as json into the `results` folder.
+This folder is cleared out on every run of the benchmarking script.
 
 ### Usage
 

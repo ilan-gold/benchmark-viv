@@ -9,9 +9,8 @@
 # cache
 python/__pycache__
 
-# browsermob-proxy stuff
-python/server.log
-python/bmp.log
+# don't commit the extension.
+js/har_extension.crx
 
 # Test results
 results

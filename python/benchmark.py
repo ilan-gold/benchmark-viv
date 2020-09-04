@@ -1,31 +1,35 @@
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import chromedriver_binary
-from browsermobproxy import Server
 
 import os
 import time
 from urllib.parse import urlparse
 import json
 import psutil
+import shutil
 
 # Image sources.
-TEST_IMAGE_GCS = {
+TEST_IMAGE_GCS_HTTP2 = {
     "name": "gcs_http2_vanderbilt",
     "url": "https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif",
+    "use_http2": True,
 }
 
-TEST_IMAGE_S3 = {
-    "name": "s3_http_vanderbilt",
-    "url": "https://s3.amazonaws.com/vitessce-data/test-data/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif",
+TEST_IMAGE_GCS_HTTP1 = {
+    "name": "gcs_http2_vanderbilt",
+    "url": "https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif",
+    "use_http2": False,
 }
-TEST_IMAGES = [TEST_IMAGE_GCS, TEST_IMAGE_S3]
+
+TEST_IMAGES = [TEST_IMAGE_GCS_HTTP1, TEST_IMAGE_GCS_HTTP2]
 
 # Top level directory for results.
-RESULTS_DIR = "../results"
+RESULTS_DIR = "../results/"
 
 
-def end_daemon_browsermob_processes():
+def end_daemon_chrome_processes():
+
     for proc in psutil.process_iter():
         cmd = []
         try:
@@ -33,68 +37,91 @@ def end_daemon_browsermob_processes():
             cmd = proc.cmdline()
         except:
             continue
-        if any(["browsermob-proxy" in arg for arg in cmd]):
+        if any(["chrome" in arg or "Chrome" in arg for arg in cmd]):
             proc.kill()
 
 
-def start_proxy_server():
-    # Unzipped library from `run-benchmark.sh`.
-    server = Server("./browsermob-proxy-2.1.4/bin/browsermob-proxy")
-    server.start()
-    proxy = server.create_proxy()
-    return (server, proxy)
+def start_chrome(use_http2):
 
-
-def start_chrome(proxy_url):
     # Set up browser to launch.
     options = webdriver.ChromeOptions()
     options.add_argument(
-        "--disable-infobars --disable-extensions --window-size=1366,768"
+        f"--disable-infobars --disable-extensions --window-size=1900,900 {'--disable-http2' if not use_http2 else ''}"
     )
-    # The proxy doesn't work with ssl/https.
-    options.add_argument("--ignore-certificate-errors")
-    options.add_argument(f"--proxy-server={proxy_url}")
-    driver = webdriver.Chrome(chrome_options=options)
+    options.add_argument("--auto-open-devtools-for-tabs")
+    options.add_extension("../js/har_extension.crx")
+    prefs = {"download.default_directory": os.path.abspath(RESULTS_DIR)}
+    options.add_experimental_option("prefs", prefs)
+    driver = webdriver.Chrome(options=options)
     return driver
 
 
-def run_tests(proxy, driver):
-    for image in TEST_IMAGES:
-        url = image["url"]
-        name = image["name"]
-        # Set up har download (i.e the log of traffic) and launch webpage for testing the current image.
-        proxy.new_har(
-            f"localhost:9000/?image_url={url}",
-            options={"captureHeaders": True, "captureContent": True},
-        )
-        driver.get(f"localhost:9000/?image_url={url}")
-        # This should be more than enough for the test to complete.
-        time.sleep(40)
+def log_results(image):
 
-        # Dump the results of the test.
-        os.makedirs(RESULTS_DIR, exist_ok=True)
-        with open(f"{RESULTS_DIR}/{name}.json", "w+") as f:
-            f.write(json.dumps(proxy.har, ensure_ascii=False))
+    url = image["url"]
+    name = image["name"]
+    use_http2 = image["use_http2"]
+
+    # Get the har file, named after the file name fetched and the protocol (see background.js)
+    har_json_file = (
+        f"har_file_{url.split('/')[-1]}_{'http1' if not use_http2 else 'http2'}.json"
+    )
+    with open(RESULTS_DIR + har_json_file, "r") as f:
+        har_log = json.loads(f.read())["log"]
+
+    # Get the entries for the requests to the image.
+    image_entries = [
+        entry for entry in har_log["entries"] if entry["request"]["url"] == url
+    ]
+
+    # Get the timings in detail
+    image_timings = [entry["timings"] for entry in image_entries]
+    print(f"***** TIMINGS FOR {url} {'http1' if not use_http2 else 'http2'} *******")
+
+    # Print each kind of timing and the total/average.
+    print("Total time spent waiting: ", sum([entry["time"] for entry in image_entries]))
+    print(
+        "Average time spent waiting: ",
+        sum([entry["time"] for entry in image_entries]) / len(image_entries),
+    )
+    for val in image_timings[0].keys():
+        print(
+            f"Time spent {val}: ",
+            sum([timing[val] for timing in image_timings if timing[val] > 0]),
+        )
+    print("*******************************************")
+
+
+def run_test(image):
+
+    url = image["url"]
+    name = image["name"]
+    use_http2 = image["use_http2"]
+
+    driver = start_chrome(use_http2)
+    driver.get(f"localhost:9000/?image_url={url}")
+
+    # This should be more than enough for the test to complete and the har to download.
+    # It is 10 seconds longer than when the har download starts.
+    time.sleep(50)
+
+    # Clean up.
+    driver.quit()
 
 
 def run_benchmark():
 
-    # Start up the proxy server to record the traffic.
-    (server, proxy) = start_proxy_server()
+    # Clear out previous results.
+    shutil.rmtree(RESULTS_DIR)
 
-    # Set up chrome browser.
-    proxy_url = urlparse(proxy.proxy).path
-    driver = start_chrome(proxy_url)
+    for image in TEST_IMAGES:
+        end_daemon_chrome_processes()
 
-    # Run tests.
-    run_tests(proxy, driver)
+        # Run tests and log results.
+        run_test(image)
+        log_results(image)
 
-    # Clean up.
-    server.stop()
-    driver.quit()
-
-    # Check whether there are browsermob processes and end them (there should be one, at least).
-    end_daemon_browsermob_processes()
+        end_daemon_chrome_processes()
 
 
 if __name__ == "__main__":
