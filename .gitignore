@@ -8,6 +8,9 @@
 /python/server.log
 /python/bmp.log
 
+# deployment files
+deployment/terraform/.terraform
+
 # cache
 python/__pycache__
 
