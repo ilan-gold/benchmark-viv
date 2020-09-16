@@ -15,28 +15,6 @@ data "aws_subnet_ids" "all" {
   vpc_id = "${data.aws_vpc.default.id}"
 }
 
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-
-  owners = ["amazon"]
-
-  filter {
-    name = "name"
-
-    values = [
-      "amzn-ami-hvm-*-x86_64-gp2",
-    ]
-  }
-
-  filter {
-    name = "owner-alias"
-
-    values = [
-      "amazon",
-    ]
-  }
-}
-
 module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 2.0"
@@ -46,15 +24,15 @@ module "security_group" {
   vpc_id      = "${data.aws_vpc.default.id}"
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["http-80-tcp", "all-icmp"]
+  ingress_rules       = ["http-80-tcp", "all-icmp", "https-443-tcp", "ssh-tcp"]
   egress_rules        = ["all-all"]
 }
-
+/*
 resource "aws_eip" "http1" {
   vpc      = true
   instance = "${module.ec2_http1.id[0]}"
 }
-
+*/
 resource "aws_eip" "http2" {
   vpc      = true
   instance = "${module.ec2_http2.id[0]}"
@@ -65,12 +43,16 @@ module "ec2_http2" {
   version                = "1.22.0"
   instance_count = 1
 
-  name          = "http2-server"
-  ami           = "${data.aws_ami.amazon_linux.id}"
+  name          = "http2-viv-benchmark"
+  ami           = "ami-07b4156579ea1d7ba"
   instance_type = "t2.medium"
   subnet_id     = "${element(data.aws_subnet_ids.all.ids, 0)}"
   vpc_security_group_ids      = ["${module.security_group.this_security_group_id}"]
   associate_public_ip_address = true
+  root_block_device = [{
+    volume_type = "gp2"
+    volume_size = 10
+  }]
   user_data = <<EOF
 #!/bin/bash
 
@@ -80,29 +62,33 @@ export DEBIAN_FRONTEND=noninteractive
 # print commands and their expanded arguments
 set -x
 
-# Download nginx
-amazon-linux-extras install nginx1.12
+# Get Ilan's ssh key
+sudo apt-get -qq update
+sudo apt-get -qq -y install git jq
+sudo apt-get -y autoremove
+sudo apt-get clean
+sudo curl -s https://api.github.com/users/ilan-gold/keys | jq -r '.[].key' >> /home/ubuntu/.ssh/authorized_keys
 
 # Make a "data" directory for the test image.
-mkdir /etc/data
-wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O /etc/data/test.ome.tif
+sudo mkdir /usr/share/nginx/
+sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O /usr/share/nginx/test.ome.tif
 
 # Use the http2 conf.
 git clone https://github.com/ilan-gold/benchmark-viv.git
-cd deployment/docker-nginx-http2-ssl-vendor
-mv /etc/nginx /etc/nginx-backup
-cp niginx.conf /etc/nginx
+cd deployment/docker-nginx-http2
+openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt -days 365 -nodes -subj "/C=US/ST=NY/L=NewYork/O=Harvard/OU=root/CN=http2.viv.vitessce.io/emailAddress=ilan_gold@hms.harvard.edu"
+sed -i 's/SUBDOMAIN.viv.vitessce.io/http2.viv.vitessce.io/g' nginx.conf
 
 EOF
 }
-
+/*
 module "ec2_http1" {
   source                 = "terraform-aws-modules/ec2-instance/aws"
   version                = "1.22.0"
 
   instance_count = 1
 
-  name          = "http1-server"
+  name          = "http1-viv-benchmark"
   ami           = "${data.aws_ami.amazon_linux.id}"
   instance_type = "t2.medium"
   subnet_id     = "${element(data.aws_subnet_ids.all.ids, 0)}"
@@ -127,8 +113,9 @@ wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.om
 # Use the http2 conf.
 git clone https://github.com/ilan-gold/benchmark-viv.git
 cd deployment/docker-nginx-http2-ssl-vendor
-mv /etc/nginx /etc/nginx-backup
-cp niginx.conf /etc/nginx
+openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt -days 365 -nodes -subj "/C=US/ST=NY/L=NewYork/O=Harvard/OU=root/CN=http1.viv.vitessce.io/emailAddress=ilan_gold@hms.harvard.edu"
+sed -i 's/SUBDOMAIN.viv.vitessce.io/http1.viv.vitessce.io' nginx.conf
 
 EOF
 }
+*/

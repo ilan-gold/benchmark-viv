@@ -10,6 +10,7 @@
 
 # deployment files
 deployment/terraform/.terraform
+deployment/terraform/terraform.tfstate.d
 
 # cache
 python/__pycache__
