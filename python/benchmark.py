@@ -47,9 +47,10 @@ def start_chrome(is_http2, proxy_url, use_bmp_http1, capture_har_with_bmp):
     options.add_argument(
         "--disable-infobars --disable-extensions"
     )
+    # Our servers use self-signing certificates (in the interest of not dealing with a CA).
+    options.add_argument("--ignore-certificate-errors")
     if not is_http2 and use_bmp_http1:
         options.add_argument(f"--proxy-server={proxy_url}")
-        options.add_argument("--ignore-certificate-errors")
     if not capture_har_with_bmp:
         options.add_extension("../js/har_extension.crx")
     options.add_argument("--auto-open-devtools-for-tabs")
