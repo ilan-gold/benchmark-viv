@@ -27,12 +27,12 @@ module "security_group" {
   ingress_rules       = ["http-80-tcp", "all-icmp", "https-443-tcp", "ssh-tcp"]
   egress_rules        = ["all-all"]
 }
-/*
+
 resource "aws_eip" "http1" {
   vpc      = true
   instance = "${module.ec2_http1.id[0]}"
 }
-*/
+
 resource "aws_eip" "http2" {
   vpc      = true
   instance = "${module.ec2_http2.id[0]}"
@@ -93,7 +93,7 @@ sudo docker build -t custom-nginx .
 sudo docker run --name custom-nginx -v /benchmark-viv/deployment/data/:/usr/share/nginx/:ro -d -p 80:80 -p 443:443 custom-nginx
 EOF
 }
-/*
+
 module "ec2_http1" {
   source                 = "terraform-aws-modules/ec2-instance/aws"
   version                = "1.22.0"
@@ -115,19 +115,34 @@ export DEBIAN_FRONTEND=noninteractive
 # print commands and their expanded arguments
 set -x
 
-# Download nginx
-amazon-linux-extras install nginx1.12
+# install packages
+sudo apt-get -qq update
+sudo apt-get -qq -y install git jq
+sudo apt-get -y autoremove
+sudo apt-get clean
+sudo curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Get Ilan's ssh key
+sudo curl -s https://api.github.com/users/ilan-gold/keys | jq -r '.[].key' >> /home/ubuntu/.ssh/authorized_keys
+
+# Use the http2 conf but alter it.
+sudo git clone https://github.com/ilan-gold/benchmark-viv.git
+cd benchmark-viv
+sudo git checkout ilan-gold/deployment
+cd deployment/docker-nginx-http2
+# Self signing ssl certificate (configured in selenium to ignore ssl) and http1 configuration.
+sudo openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt -days 365 -nodes -subj "/C=US/ST=NY/L=NewYork/O=Harvard/OU=root/CN=http1.viv.vitessce.io/emailAddress=ilan_gold@hms.harvard.edu"
+sudo sed -i 's/SUBDOMAIN.viv.vitessce.io/http1.viv.vitessce.io/g' nginx.conf
+sudo sed -i 's/443 ssl http2/443 ssl/g' nginx.conf
 
 # Make a "data" directory for the test image.
-mkdir /etc/data
-wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O /etc/data/test.ome.tif
+sudo mkdir ../data
+sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O ../data/test.ome.tif
+sudo wget avivator.gehlenborglab.org -O ../data/index.html
 
-# Use the http2 conf.
-git clone https://github.com/ilan-gold/benchmark-viv.git
-cd deployment/docker-nginx-http2-ssl-vendor
-openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt -days 365 -nodes -subj "/C=US/ST=NY/L=NewYork/O=Harvard/OU=root/CN=http1.viv.vitessce.io/emailAddress=ilan_gold@hms.harvard.edu"
-sed -i 's/SUBDOMAIN.viv.vitessce.io/http1.viv.vitessce.io' nginx.conf
-
+# Build the docker image
+sudo docker build -t custom-nginx .
+sudo docker run --name custom-nginx -v /benchmark-viv/deployment/data/:/usr/share/nginx/:ro -d -p 80:80 -p 443:443 custom-nginx
 EOF
 }
-*/
