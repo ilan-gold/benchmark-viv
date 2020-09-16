@@ -88,7 +88,7 @@ sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-Mx
 
 # Build the docker image
 sudo docker build -t custom-nginx .
-sudo docker run --name custom-nginx-instance -d -p 80:80 custom-nginx
+sudo docker run --name custom-nginx-instance -d -p 80:80 -p 443:443 custom-nginx
 EOF
 }
 /*
