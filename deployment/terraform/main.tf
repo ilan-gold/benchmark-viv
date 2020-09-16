@@ -76,6 +76,7 @@ sudo curl -s https://api.github.com/users/ilan-gold/keys | jq -r '.[].key' >> /h
 
 # Use the http2 conf.
 git clone https://github.com/ilan-gold/benchmark-viv.git
+cd benchmark-viv
 cd deployment/docker-nginx-http2
 # Self signing ssl certificate (configured in selenium to ignore ssl).
 openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt -days 365 -nodes -subj "/C=US/ST=NY/L=NewYork/O=Harvard/OU=root/CN=http2.viv.vitessce.io/emailAddress=ilan_gold@hms.harvard.edu"
@@ -87,7 +88,7 @@ sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-Mx
 
 # Build the docker image
 sudo docker build -t custom-nginx .
-docker run --name custom-nginx-instance -d -p 8080:80 custom-nginx
+sudo docker run --name custom-nginx-instance -d -p 80:80 custom-nginx
 EOF
 }
 /*
