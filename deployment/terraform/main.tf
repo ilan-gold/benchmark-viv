@@ -68,27 +68,28 @@ sudo apt-get -qq update
 sudo apt-get -qq -y install git jq
 sudo apt-get -y autoremove
 sudo apt-get clean
-curl -fsSL https://get.docker.com -o get-docker.sh
+sudo curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
 # Get Ilan's ssh key
 sudo curl -s https://api.github.com/users/ilan-gold/keys | jq -r '.[].key' >> /home/ubuntu/.ssh/authorized_keys
 
 # Use the http2 conf.
-git clone https://github.com/ilan-gold/benchmark-viv.git
+sudo git clone https://github.com/ilan-gold/benchmark-viv.git
 cd benchmark-viv
+sudo git checkout ilan-gold/deployment
 cd deployment/docker-nginx-http2
 # Self signing ssl certificate (configured in selenium to ignore ssl).
-openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt -days 365 -nodes -subj "/C=US/ST=NY/L=NewYork/O=Harvard/OU=root/CN=http2.viv.vitessce.io/emailAddress=ilan_gold@hms.harvard.edu"
-sed -i 's/SUBDOMAIN.viv.vitessce.io/http2.viv.vitessce.io/g' nginx.conf
+sudo openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt -days 365 -nodes -subj "/C=US/ST=NY/L=NewYork/O=Harvard/OU=root/CN=http2.viv.vitessce.io/emailAddress=ilan_gold@hms.harvard.edu"
+sudo sed -i 's/SUBDOMAIN.viv.vitessce.io/http2.viv.vitessce.io/g' nginx.conf
 
 # Make a "data" directory for the test image.
-mkdir data
+sudo mkdir data
 sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O data/test.ome.tif
 
 # Build the docker image
 sudo docker build -t custom-nginx .
-sudo docker run --name custom-nginx-instance -d -p 80:80 -p 443:443 custom-nginx
+sudo docker run --name custom-nginx -d -p 80:80 -p 443:443 custom-nginx
 EOF
 }
 /*
