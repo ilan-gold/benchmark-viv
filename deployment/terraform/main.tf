@@ -52,7 +52,7 @@ module "ec2_http2" {
   root_block_device = [{
     volume_type = "gp2"
     # Need a lot for tiff files.
-    volume_size = 100
+    volume_size = 25
   }]
   user_data = <<EOF
 #!/bin/bash
