@@ -51,7 +51,8 @@ module "ec2_http2" {
   associate_public_ip_address = true
   root_block_device = [{
     volume_type = "gp2"
-    volume_size = 10
+    # Need a lot for tiff files.
+    volume_size = 100
   }]
   user_data = <<EOF
 #!/bin/bash
@@ -62,23 +63,31 @@ export DEBIAN_FRONTEND=noninteractive
 # print commands and their expanded arguments
 set -x
 
-# Get Ilan's ssh key
+# install packages
 sudo apt-get -qq update
 sudo apt-get -qq -y install git jq
 sudo apt-get -y autoremove
 sudo apt-get clean
-sudo curl -s https://api.github.com/users/ilan-gold/keys | jq -r '.[].key' >> /home/ubuntu/.ssh/authorized_keys
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
 
-# Make a "data" directory for the test image.
-sudo mkdir /usr/share/nginx/
-sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O /usr/share/nginx/test.ome.tif
+# Get Ilan's ssh key
+sudo curl -s https://api.github.com/users/ilan-gold/keys | jq -r '.[].key' >> /home/ubuntu/.ssh/authorized_keys
 
 # Use the http2 conf.
 git clone https://github.com/ilan-gold/benchmark-viv.git
 cd deployment/docker-nginx-http2
+# Self signing ssl certificate (configured in selenium to ignore ssl).
 openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-selfsigned.crt -days 365 -nodes -subj "/C=US/ST=NY/L=NewYork/O=Harvard/OU=root/CN=http2.viv.vitessce.io/emailAddress=ilan_gold@hms.harvard.edu"
 sed -i 's/SUBDOMAIN.viv.vitessce.io/http2.viv.vitessce.io/g' nginx.conf
 
+# Make a "data" directory for the test image.
+mkdir data
+sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O data/test.ome.tif
+
+# Build the docker image
+sudo docker build -t custom-nginx .
+docker run --name custom-nginx-instance -d -p 8080:80 custom-nginx
 EOF
 }
 /*
