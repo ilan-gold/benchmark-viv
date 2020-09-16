@@ -90,7 +90,7 @@ sudo wget avivator.gehlenborglab.org -O /data/index.html
 
 # Build the docker image
 sudo docker build -t custom-nginx .
-sudo docker run --name custom-nginx -v /data:/usr/share/nginx/ -d -p 80:80 -p 443:443 custom-nginx
+sudo docker run --name custom-nginx -d -p 80:80 -p 443:443 custom-nginx
 EOF
 }
 /*
