@@ -84,12 +84,13 @@ sudo openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-
 sudo sed -i 's/SUBDOMAIN.viv.vitessce.io/http2.viv.vitessce.io/g' nginx.conf
 
 # Make a "data" directory for the test image.
-sudo mkdir ../data
+sudo mkdir /data
 sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O /data/test.ome.tif
+sudo wget avivator.gehlenborglab.org -O /data/index.html
 
 # Build the docker image
 sudo docker build -t custom-nginx .
-sudo docker run --name custom-nginx -d -p 80:80 -p 443:443 custom-nginx
+sudo docker run --name custom-nginx -v /data:/usr/share/nginx/ -d -p 80:80 -p 443:443 custom-nginx
 EOF
 }
 /*
