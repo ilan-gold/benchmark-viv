@@ -27,6 +27,8 @@ So far, we have a list at the top of `js/App.js` called `transitionViewStates` t
 
 Right now only the standard Vanderbilt MxIF Kidney OME-ITFF images are used (tile size 512), with one copy on s3 and GCS. Eventually, we will want to test different tile sizes, file formats (i.e Zarr), local and remote files, number of channels, screen size (mobile vs browser), and all the combinations (on both HTTP and HTTP2).
 
+To generate data and push it to the cloud, please see the `data` folder.
+
 ### Deployment
 
 To deploy servers to benchmark against, see the `deployment` folder.
