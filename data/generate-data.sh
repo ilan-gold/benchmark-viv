@@ -9,9 +9,9 @@ tile_sizes=(256 512 1024)
 for tile_size in "${tile_sizes[@]}"
 do
   ZARR_NAME="spraggins_${tile_size}"
-	bioformats2raw ../${ORIGINAL_DIR}/spraggins.ome.tif $ZARR_NAME --file_type=zarr --tile_height $tile_size --tile_width $tile_size --overwrite
+	bioformats2raw ../${ORIGINAL_DIR}/spraggins.ome.tif $ZARR_NAME --file_type=zarr --tile_height $tile_size --tile_width $tile_size
   aws s3 cp --recursive $ZARR_NAME s3://viv-benchmark/data
-  bioformats2raw spraggins.ome.tif spraggins.n5/ --tile_height $tile_size --tile_width $tile_size --overwrite
+  bioformats2raw spraggins.ome.tif spraggins.n5/ --tile_height $tile_size --tile_width $tile_size
   compression_algos=("zlib" "lzw")
   for algo in "${compression_algos[@]}"
   do
