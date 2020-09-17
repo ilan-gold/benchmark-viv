@@ -1,7 +1,7 @@
 ORIGINAL_DIR="original"
 mkdir $ORIGINAL_DIR
 ORIGINAL_TIFF=original/spraggins.ome.tif
-if [ ! -f ORIGINAL_TIFF ]; then
+if [ ! -f $ORIGINAL_TIFF ]; then
     wget https://vitessce-data.s3.amazonaws.com/source-data/spraggins/spraggins.ome.tif -O ORIGINAL_TIFF
 fi
 
