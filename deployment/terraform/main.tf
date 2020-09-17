@@ -28,11 +28,6 @@ module "security_group" {
   egress_rules        = ["all-all"]
 }
 
-resource "aws_eip" "http1" {
-  vpc      = true
-  instance = "${module.ec2_http1.id[0]}"
-}
-
 resource "aws_eip" "http2" {
   vpc      = true
   instance = "${module.ec2_http2.id[0]}"
@@ -52,7 +47,7 @@ module "ec2_http2" {
   root_block_device = [{
     volume_type = "gp2"
     # Need a lot for tiff files.
-    volume_size = 25
+    volume_size = 100
   }]
   user_data = <<EOF
 #!/bin/bash
@@ -94,18 +89,28 @@ sudo docker run --name custom-nginx -v /benchmark-viv/deployment/data/:/usr/shar
 EOF
 }
 
+
+resource "aws_eip" "http1" {
+  vpc      = true
+  instance = "${module.ec2_http1.id[0]}"
+}
+
 module "ec2_http1" {
   source                 = "terraform-aws-modules/ec2-instance/aws"
   version                = "1.22.0"
-
   instance_count = 1
 
   name          = "http1-viv-benchmark"
-  ami           = "${data.aws_ami.amazon_linux.id}"
+  ami           = "ami-07b4156579ea1d7ba"
   instance_type = "t2.medium"
   subnet_id     = "${element(data.aws_subnet_ids.all.ids, 0)}"
   vpc_security_group_ids      = ["${module.security_group.this_security_group_id}"]
   associate_public_ip_address = true
+  root_block_device = [{
+    volume_type = "gp2"
+    # Need a lot for tiff files.
+    volume_size = 100
+  }]
   user_data = <<EOF
 #!/bin/bash
 
