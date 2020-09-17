@@ -102,14 +102,16 @@ def run_test(image):
     is_http2 = image["is_http2"]
     use_bmp_http1 = image["use_bmp_http1"]
     capture_har_with_bmp = image["capture_har_with_bmp"]
-
-    (server, proxy) = start_proxy_server()
-    proxy_url = urlparse(proxy.proxy).path
+    proxy_url = ''
+    if use_bmp_http1 or capture_har_with_bmp:
+        (server, proxy) = start_proxy_server()
+        proxy_url = urlparse(proxy.proxy).path
     driver = start_chrome(is_http2, proxy_url, use_bmp_http1, capture_har_with_bmp)
-    proxy.new_har(
-        f"localhost:9000/?image_url={url}",
-        options={"captureHeaders": True, "captureContent": True},
-    )
+    if use_bmp_http1 or capture_har_with_bmp:
+        proxy.new_har(
+            f"localhost:9000/?image_url={url}",
+            options={"captureHeaders": True, "captureContent": True},
+        )
     driver.get(f"localhost:9000/?image_url={url}")
 
     # This should be more than enough for the test to complete and the har to download.
@@ -123,7 +125,8 @@ def run_test(image):
             f.write(json.dumps(proxy.har, ensure_ascii=False))
 
     # Clean up.
-    server.stop()
+    if use_bmp_http1 or capture_har_with_bmp:
+        server.stop()
     driver.quit()
 
 
