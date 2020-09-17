@@ -6,7 +6,7 @@ if [ ! -f $ORIGINAL_TIFF ]; then
 fi
 
 DERIVED_DIR="derived"
-N5_DIR = "spraggins.n5"
+N5_DIR="spraggins.n5"
 WORKERS=$(nproc)
 mkdir $DERIVED_DIR
 cd $DERIVED_DIR
