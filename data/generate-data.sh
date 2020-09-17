@@ -1,6 +1,9 @@
 ORIGINAL_DIR="original"
 mkdir $ORIGINAL_DIR
-wget https://vitessce-data.s3.amazonaws.com/source-data/spraggins/spraggins.ome.tif -O ${ORIGINAL_DIR}/spraggins.ome.tif
+ORIGINAL_TIFF=original/spraggins.ome.tif
+if [ !-f ORIGINAL_TIFF ]; then
+    wget https://vitessce-data.s3.amazonaws.com/source-data/spraggins/spraggins.ome.tif -O ORIGINAL_TIFF
+fi
 
 DERIVED_DIR="derived"
 N5_DIR = "spraggins.n5"
@@ -11,7 +14,7 @@ tile_sizes=(256 512 1024)
 for tile_size in "${tile_sizes[@]}"
 do
   ZARR_NAME="spraggins_${tile_size}"
-	bioformats2raw ../${ORIGINAL_DIR}/spraggins.ome.tif $ZARR_NAME --file_type=zarr --tile_height $tile_size --tile_width $tile_size --max_workers $WORKERS
+	bioformats2raw ../$ORIGINAL_TIFF $ZARR_NAME --file_type=zarr --tile_height $tile_size --tile_width $tile_size --max_workers $WORKERS
   aws s3 cp --recursive $ZARR_NAME s3://viv-benchmark/data
   rm -r $ZARR_NAME
   bioformats2raw spraggins.ome.tif $N5_DIR --tile_height $tile_size --tile_width $tile_size
