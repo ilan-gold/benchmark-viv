@@ -11,7 +11,9 @@
 # deployment files
 deployment/terraform/.terraform
 deployment/terraform/terraform.tfstate.d
-
+deployment/data
+data/original
+data/derived
 # cache
 python/__pycache__
 
