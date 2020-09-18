@@ -26,7 +26,7 @@ Right now only the standard Vanderbilt MxIF Kidney OME-ITFF images are used (til
 #### Tasks
 - tilesize vs. viewport size:
   - `tilesizes`: 256x256, 512x512, 1024x1024 
-  - `viewport sizes`: Mobile, Tablet, Desktop, Widescreen?
+  - `viewport sizes`: (375x812) - iPhone X, (768x1024) - iPad, (1280x800) Macbook Pro retina, (1920x1080) large [more info](https://mediag.com/blog/popular-screen-resolutions-designing-for-all/).
   - Expected results: larger tiles for bigger displays will generally be better; smaller tiles faster to load.
 - number of channels (1-6):
   - Expected results: fewer channels, faster loading.
