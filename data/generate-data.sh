@@ -21,7 +21,7 @@ do
 	bioformats2raw ../$ORIGINAL_TIFF $ZARR_NAME --file_type=zarr --tile_height $tile_size --tile_width $tile_size --max_workers $WORKERS
   aws s3 cp --recursive $ZARR_NAME s3://viv-benchmark/data/$ZARR_NAME
   rm -r $ZARR_NAME
-  bioformats2raw spraggins.ome.tif $N5_DIR --tile_height $tile_size --tile_width $tile_size
+  bioformats2raw ../$ORIGINAL_TIFF $N5_DIR --tile_height $tile_size --tile_width $tile_size
   compression_algos=("zlib" "lzw")
   for algo in "${compression_algos[@]}"
   do
