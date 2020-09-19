@@ -3,7 +3,7 @@
 set -o errexit
 
 ORIGINAL_DIR="original"
-mkdir $ORIGINAL_DIR
+mkdir -p $ORIGINAL_DIR
 ORIGINAL_TIFF=original/spraggins.ome.tif
 if [ ! -f $ORIGINAL_TIFF ]; then
     wget https://vitessce-data.s3.amazonaws.com/source-data/spraggins/spraggins.ome.tif -O spraggins.ome.tif
@@ -12,7 +12,7 @@ fi
 DERIVED_DIR="derived"
 N5_DIR="spraggins.n5"
 WORKERS=$(nproc)
-mkdir $DERIVED_DIR
+mkdir -p $DERIVED_DIR
 cd $DERIVED_DIR
 tile_sizes=(256 512 1024)
 for tile_size in "${tile_sizes[@]}"
