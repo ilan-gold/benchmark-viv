@@ -1,3 +1,5 @@
+#!/bin/sh
+
 set -o errexit
 
 ORIGINAL_DIR="original"
