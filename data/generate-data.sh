@@ -1,3 +1,5 @@
+set -o errexit
+
 ORIGINAL_DIR="original"
 mkdir $ORIGINAL_DIR
 ORIGINAL_TIFF=original/spraggins.ome.tif
@@ -15,16 +17,16 @@ for tile_size in "${tile_sizes[@]}"
 do
   ZARR_NAME="spraggins_${tile_size}"
 	bioformats2raw ../$ORIGINAL_TIFF $ZARR_NAME --file_type=zarr --tile_height $tile_size --tile_width $tile_size --max_workers $WORKERS
-  aws s3 cp --recursive $ZARR_NAME s3://viv-benchmark/data
+  aws s3 cp --recursive $ZARR_NAME s3://viv-benchmark/data/$ZARR_NAME
   rm -r $ZARR_NAME
   bioformats2raw spraggins.ome.tif $N5_DIR --tile_height $tile_size --tile_width $tile_size
-  rm -r $N5_DIR
   compression_algos=("zlib" "lzw")
   for algo in "${compression_algos[@]}"
   do
     TIFF_NAME="spraggins_${tile_size}_${algo}.ome.tif"
     raw2ometiff $N5_DIR $TIFF_NAME --compression=$algo
-    aws s3 cp $TIFF_NAME s3://viv-benchmark/data
+    aws s3 cp $TIFF_NAME s3://viv-benchmark/data/$TIFF_NAME
     rm $TIFF_NAME
   done
+  rm -r $N5_DIR
 done
