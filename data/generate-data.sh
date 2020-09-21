@@ -30,5 +30,8 @@ do
     aws s3 cp $TIFF_NAME s3://viv-benchmark/data/$TIFF_NAME
     rm $TIFF_NAME
   done
-  rm -r $N5_DIR
+  cd ..
+  rm -r $DERIVED_DIR
+  mkdir -p $DERIVED_DIR
+  cd $DERIVED_DIR
 done
