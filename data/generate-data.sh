@@ -22,7 +22,7 @@ do
   aws s3 cp --recursive $ZARR_NAME s3://viv-benchmark/data/$ZARR_NAME
   rm -r $ZARR_NAME
   bioformats2raw ../$ORIGINAL_TIFF $N5_DIR --tile_height $tile_size --tile_width $tile_size
-  compression_algos=("zlib" "lzw")
+  compression_algos=("zlib" "LZW")
   for algo in "${compression_algos[@]}"
   do
     TIFF_NAME="spraggins_${tile_size}_${algo}.ome.tif"
