@@ -47,7 +47,7 @@ module "ec2_http2" {
   root_block_device = [{
     volume_type = "gp2"
     # Need a lot for tiff files.
-    volume_size = 100
+    volume_size = 125
   }]
   user_data = <<EOF
 #!/bin/bash
@@ -60,7 +60,7 @@ set -x
 
 # install packages
 sudo apt-get -qq update
-sudo apt-get -qq -y install git jq
+sudo apt-get -qq -y install git jq awscli
 sudo apt-get -y autoremove
 sudo apt-get clean
 sudo curl -fsSL https://get.docker.com -o get-docker.sh
@@ -79,13 +79,12 @@ sudo openssl req -x509 -newkey rsa:4096 -keyout nginx-selfsigned.key -out nginx-
 sudo sed -i 's/SUBDOMAIN.viv.vitessce.io/http2.viv.vitessce.io/g' nginx.conf
 
 # Make a "data" directory for the test image.
-sudo mkdir ../data
-sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O ../data/test.ome.tif
-sudo wget avivator.gehlenborglab.org -O ../data/index.html
+sudo mkdir ../server-data
+sudo aws s3 cp --recursive s3://viv-benchmark/data/ ../server-data/
 
 # Build the docker image
 sudo docker build -t custom-nginx .
-sudo docker run --name custom-nginx -v /benchmark-viv/deployment/data/:/usr/share/nginx/:ro -d -p 80:80 -p 443:443 custom-nginx
+sudo docker run --name custom-nginx -v /benchmark-viv/deployment/server-data/:/usr/share/nginx/:ro -d -p 80:80 -p 443:443 custom-nginx
 EOF
 }
 
@@ -109,7 +108,7 @@ module "ec2_http1" {
   root_block_device = [{
     volume_type = "gp2"
     # Need a lot for tiff files.
-    volume_size = 100
+    volume_size = 125
   }]
   user_data = <<EOF
 #!/bin/bash
@@ -122,7 +121,7 @@ set -x
 
 # install packages
 sudo apt-get -qq update
-sudo apt-get -qq -y install git jq
+sudo apt-get -qq -y install git jq awscli
 sudo apt-get -y autoremove
 sudo apt-get clean
 sudo curl -fsSL https://get.docker.com -o get-docker.sh
@@ -142,12 +141,11 @@ sudo sed -i 's/SUBDOMAIN.viv.vitessce.io/http1.viv.vitessce.io/g' nginx.conf
 sudo sed -i 's/443 ssl http2/443 ssl/g' nginx.conf
 
 # Make a "data" directory for the test image.
-sudo mkdir ../data
-sudo wget https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif -O ../data/test.ome.tif
-sudo wget avivator.gehlenborglab.org -O ../data/index.html
+sudo mkdir ../server-data
+sudo aws s3 cp --recursive s3://viv-benchmark/data/ ../server-data/
 
 # Build the docker image
 sudo docker build -t custom-nginx .
-sudo docker run --name custom-nginx -v /benchmark-viv/deployment/data/:/usr/share/nginx/:ro -d -p 80:80 -p 443:443 custom-nginx
+sudo docker run --name custom-nginx -v /benchmark-viv/deployment/server-data/:/usr/share/nginx/:ro -d -p 80:80 -p 443:443 custom-nginx
 EOF
 }
