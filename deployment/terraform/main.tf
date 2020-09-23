@@ -33,6 +33,42 @@ resource "aws_eip" "http2" {
   instance = "${module.ec2_http2.id[0]}"
 }
 
+resource "aws_iam_role" "ec2_http2" {
+  description        = "Permissions for the ec2_http2 EC2 instance"
+  name               = "ec2_http2"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["sts:AssumeRole"],
+      "Effect": "Allow",
+      "Principal": {
+          "Service": ["ec2.amazonaws.com"]
+      }
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "ec2_http2_s3_access" {
+  name   = "AllowAccessToRefineryS3Buckets"
+  role   = "${aws_iam_role.ec2_http2.id}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": "arn:aws:s3:::viv-benchmark/*"
+    },
+  ]
+}
+EOF
+}
+
 module "ec2_http2" {
   source                 = "terraform-aws-modules/ec2-instance/aws"
   version                = "1.22.0"
@@ -92,6 +128,42 @@ EOF
 resource "aws_eip" "http1" {
   vpc      = true
   instance = "${module.ec2_http1.id[0]}"
+}
+
+resource "aws_iam_role" "ec2_http1" {
+  description        = "Permissions for the ec2_http1 EC2 instance"
+  name               = "ec2_http1"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["sts:AssumeRole"],
+      "Effect": "Allow",
+      "Principal": {
+          "Service": ["ec2.amazonaws.com"]
+      }
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "ec2_http1_s3_access" {
+  name   = "AllowAccessToRefineryS3Buckets"
+  role   = "${aws_iam_role.ec2_http1.id}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": "arn:aws:s3:::viv-benchmark/*"
+    },
+  ]
+}
+EOF
 }
 
 module "ec2_http1" {
