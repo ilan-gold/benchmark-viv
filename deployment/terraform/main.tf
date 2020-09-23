@@ -67,7 +67,7 @@ resource "aws_iam_role_policy" "ec2_http2_s3_access" {
     {
       "Effect": "Allow",
       "Action": "s3:*",
-      "Resource": "arn:aws:s3:::viv-benchmark/*"
+      "Resource": "arn:aws:s3:::viv-benchmark*"
     }
   ]
 }
@@ -170,7 +170,7 @@ resource "aws_iam_role_policy" "ec2_http1_s3_access" {
     {
       "Effect": "Allow",
       "Action": "s3:*",
-      "Resource": "arn:aws:s3:::viv-benchmark/*"
+      "Resource": "arn:aws:s3:::viv-benchmark*"
     }
   ]
 }
