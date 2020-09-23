@@ -52,8 +52,13 @@ resource "aws_iam_role" "ec2_http2" {
 EOF
 }
 
+resource "aws_iam_instance_profile" "ec2_http2_profile" {
+  name = "ec2_http2_profile"
+  role = "${aws_iam_role.ec2_http2.name}"
+}
+
 resource "aws_iam_role_policy" "ec2_http2_s3_access" {
-  name   = "AllowAccessToRefineryS3Buckets"
+  name   = "AllowAccessToVivBenchmarkS3Bucket"
   role   = "${aws_iam_role.ec2_http2.id}"
   policy = <<EOF
 {
@@ -63,7 +68,7 @@ resource "aws_iam_role_policy" "ec2_http2_s3_access" {
       "Effect": "Allow",
       "Action": ["s3:GetObject"],
       "Resource": "arn:aws:s3:::viv-benchmark/*"
-    },
+    }
   ]
 }
 EOF
@@ -78,6 +83,7 @@ module "ec2_http2" {
   ami           = "ami-07b4156579ea1d7ba"
   instance_type = "t2.medium"
   subnet_id     = "${element(data.aws_subnet_ids.all.ids, 0)}"
+  iam_instance_profile   = "${aws_iam_instance_profile.ec2_http2_profile.name}"
   vpc_security_group_ids      = ["${module.security_group.this_security_group_id}"]
   associate_public_ip_address = true
   root_block_device = [{
@@ -149,8 +155,13 @@ resource "aws_iam_role" "ec2_http1" {
 EOF
 }
 
+resource "aws_iam_instance_profile" "ec2_http1_profile" {
+  name = "ec2_http1_profile"
+  role = "${aws_iam_role.ec2_http1.name}"
+}
+
 resource "aws_iam_role_policy" "ec2_http1_s3_access" {
-  name   = "AllowAccessToRefineryS3Buckets"
+  name   = "AllowAccessToVivBenchmarkS3Bucket"
   role   = "${aws_iam_role.ec2_http1.id}"
   policy = <<EOF
 {
@@ -160,7 +171,7 @@ resource "aws_iam_role_policy" "ec2_http1_s3_access" {
       "Effect": "Allow",
       "Action": ["s3:GetObject"],
       "Resource": "arn:aws:s3:::viv-benchmark/*"
-    },
+    }
   ]
 }
 EOF
@@ -174,6 +185,7 @@ module "ec2_http1" {
   name          = "http1-viv-benchmark"
   ami           = "ami-07b4156579ea1d7ba"
   instance_type = "t2.medium"
+  iam_instance_profile   = "${aws_iam_instance_profile.ec2_http1_profile.name}"
   subnet_id     = "${element(data.aws_subnet_ids.all.ids, 0)}"
   vpc_security_group_ids      = ["${module.security_group.this_security_group_id}"]
   associate_public_ip_address = true
