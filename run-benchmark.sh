@@ -21,5 +21,7 @@ if ! [[ -d "./browsermob-proxy-2.1.4" ]]; then
   rm browsermob-proxy.zip 
 fi
 
+mkdir results
+
 # Run test.
 python benchmark.py

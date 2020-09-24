@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 
 import DeckGL, { OrthographicView, LinearInterpolator } from "deck.gl";
-import { MultiscaleImageLayer, createOMETiffLoader } from "@hms-dbmi/viv";
+import { MultiscaleImageLayer, createOMETiffLoader, createBioformatsZarrLoader } from "@hms-dbmi/viv";
 
 // Interpolator.  We can turn off and on what gets interpolated.
 const transitionInterpolator = new LinearInterpolator(["target", "zoom"]);
@@ -51,10 +51,11 @@ export default function App() {
 
   useEffect(() => {
     const getLoader = async () => {
-      const newLoader = await createOMETiffLoader({
-        url: url.searchParams.get("image_url"),
+      const imageUrl = url.searchParams.get("image_url")
+      const newLoader = imageUrl.includes('ome.tif') ? await createOMETiffLoader({
+        url: imageUrl,
         offsets: [],
-      });
+      }) : await createBioformatsZarrLoader({ url: imageUrl });
       setLoader(newLoader);
     };
     getLoader();

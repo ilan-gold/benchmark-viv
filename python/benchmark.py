@@ -75,7 +75,7 @@ def log_results(image):
 
     # Get the entries for the requests to the image.
     image_entries = [
-        entry for entry in har_log["entries"] if entry["request"]["url"] == url
+        entry for entry in har_log["entries"] if url in entry["request"]["url"]
     ]
 
     # Get the timings in detail
@@ -116,7 +116,7 @@ def run_test(image):
 
     # This should be more than enough for the test to complete and the har to download.
     # It is 10 seconds longer than when the har download starts.
-    time.sleep(50)
+    time.sleep(60)
 
     # After finishing, download results from proxy of har.
     if not is_http2 and use_bmp_http1 and capture_har_with_bmp:
@@ -135,19 +135,28 @@ def run_benchmark():
     # Clear out previous results.
     if os.path.exists(RESULTS_DIR) and os.path.isdir(RESULTS_DIR):
         shutil.rmtree(RESULTS_DIR)
+        
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    # Run the test 20 times.
+    for i in range(20):
+        # Open configuration file.
+        with open('../image_test_files.json', 'r') as f:
+            images = json.loads(f.read())
 
-    # Open configuration file.
-    with open('../image_test_files.json', 'r') as f:
-        images = json.loads(f.read())
+        for image in images:
+            end_daemon_processes()
 
-    for image in images:
-        end_daemon_processes()
+            # Run tests and log results.
+            run_test(image)
+            log_results(image)
 
-        # Run tests and log results.
-        run_test(image)
-        log_results(image)
+            end_daemon_processes()
 
-        end_daemon_processes()
+        # Move these results out of results and start fresh.
+        os.makedirs(RESULTS_DIR.replace('results', f'results{str(i)}'), exist_ok=True)
+        shutil.move(RESULTS_DIR, RESULTS_DIR.replace('results', f'results{str(i)}'))
+        os.makedirs(RESULTS_DIR, exist_ok=True)
+        
 
 
 if __name__ == "__main__":
