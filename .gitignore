@@ -8,6 +8,12 @@
 /python/server.log
 /python/bmp.log
 
+# deployment files
+deployment/terraform/.terraform
+deployment/terraform/terraform.tfstate.d
+deployment/data
+data/original
+data/derived
 # cache
 python/__pycache__
 
@@ -15,7 +21,7 @@ python/__pycache__
 js/har_extension.crx
 
 # Test results
-results
+results*
 
 # Build
 /js/dist

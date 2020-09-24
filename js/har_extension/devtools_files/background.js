@@ -24,4 +24,4 @@ setTimeout(function () {
     
   });
 // This is a reasonable number for the automated process to finish.
-}, 40000)
+}, 55000)

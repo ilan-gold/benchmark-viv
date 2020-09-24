@@ -1,12 +1,72 @@
 [
   {
-    "url": "https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif",
+    "url": "https://http1.viv.vitessce.io/spraggins_1024_zlib.ome.tif",
     "is_http2": false,
-    "use_bmp_http1": true,
-    "capture_har_with_bmp": true
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
   },
   {
-    "url": "https://viv-demo.storage.googleapis.com/Vanderbilt-Spraggins-Kidney-MxIF.ome.tif",
+    "url": "https://http2.viv.vitessce.io/spraggins_1024_zlib.ome.tif",
+    "is_http2": true,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http1.viv.vitessce.io/spraggins_512_zlib.ome.tif",
+    "is_http2": false,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http2.viv.vitessce.io/spraggins_512_zlib.ome.tif",
+    "is_http2": true,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http1.viv.vitessce.io/spraggins_256_zlib.ome.tif",
+    "is_http2": false,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http2.viv.vitessce.io/spraggins_256_zlib.ome.tif",
+    "is_http2": true,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http1.viv.vitessce.io/spraggins_1024",
+    "is_http2": false,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http2.viv.vitessce.io/spraggins_1024",
+    "is_http2": true,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http1.viv.vitessce.io/spraggins_512",
+    "is_http2": false,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http2.viv.vitessce.io/spraggins_512",
+    "is_http2": true,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http1.viv.vitessce.io/spraggins_256",
+    "is_http2": false,
+    "use_bmp_http1": false,
+    "capture_har_with_bmp": false
+  },
+  {
+    "url": "https://http2.viv.vitessce.io/spraggins_256",
     "is_http2": true,
     "use_bmp_http1": false,
     "capture_har_with_bmp": false
