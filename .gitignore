@@ -7,6 +7,7 @@
 /python/browsermob-proxy*
 /python/server.log
 /python/bmp.log
+/python/.ipynb_checkpoints
 
 # deployment files
 deployment/terraform/.terraform
