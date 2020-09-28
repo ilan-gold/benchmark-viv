@@ -3,72 +3,96 @@
     "url": "https://http1.viv.vitessce.io/spraggins_1024_zlib.ome.tif",
     "is_http2": false,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 1024,
+    "type": "tiff"
   },
   {
     "url": "https://http2.viv.vitessce.io/spraggins_1024_zlib.ome.tif",
     "is_http2": true,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 1024,
+    "type": "tiff"
   },
   {
     "url": "https://http1.viv.vitessce.io/spraggins_512_zlib.ome.tif",
     "is_http2": false,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 512,
+    "type": "tiff"
   },
   {
     "url": "https://http2.viv.vitessce.io/spraggins_512_zlib.ome.tif",
     "is_http2": true,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 512,
+    "type": "tiff"
   },
   {
     "url": "https://http1.viv.vitessce.io/spraggins_256_zlib.ome.tif",
     "is_http2": false,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 256,
+    "type": "tiff"
   },
   {
     "url": "https://http2.viv.vitessce.io/spraggins_256_zlib.ome.tif",
     "is_http2": true,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 256,
+    "type": "tiff"
   },
   {
     "url": "https://http1.viv.vitessce.io/spraggins_1024",
     "is_http2": false,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 1024,
+    "type": "zarr"
   },
   {
     "url": "https://http2.viv.vitessce.io/spraggins_1024",
     "is_http2": true,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 1024,
+    "type": "zarr"
   },
   {
     "url": "https://http1.viv.vitessce.io/spraggins_512",
     "is_http2": false,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 512,
+    "type": "zarr"
   },
   {
     "url": "https://http2.viv.vitessce.io/spraggins_512",
     "is_http2": true,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 512,
+    "type": "zarr"
   },
   {
     "url": "https://http1.viv.vitessce.io/spraggins_256",
     "is_http2": false,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 256,
+    "type": "zarr"
   },
   {
     "url": "https://http2.viv.vitessce.io/spraggins_256",
     "is_http2": true,
     "use_bmp_http1": false,
-    "capture_har_with_bmp": false
+    "capture_har_with_bmp": false,
+    "tile_size": 256,
+    "type": "zarr"
   }
 ]
